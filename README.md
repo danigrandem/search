@@ -1,46 +1,43 @@
-# Getting Started with Create React App
+# React Search Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a simple React application that allows users to search for TV shows using the TVMaze API. The application is designed to fetch search results and display them in a user-friendly interface.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Search for TV shows by name.
+- Display search results with show titles.
+- Provide user feedback during loading and error states.
 
-### `npm start`
+## Getting Started
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Follow these instructions to set up and run the project locally.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### Prerequisites
 
-### `npm test`
+- [Node.js](https://nodejs.org/) (v14 or later)
+- npm (v6 or later) - comes with Node.js
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Setup and Installation
+Clone this repository, install dependencies and start the development server
 
-### `npm run build`
+## Usage
+Type the name of a TV show in the input box and click "Search".
+The application will fetch shows matching your query and display the results.
+The search functionality uses a simulated API call for demonstration. Adjust the search logic within the SearchScreen component to integrate with a real API if needed.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Coding task:
+As part of the assessment, you are required to complete the following task within a time span of maximum two hours:
+- Add a UI to your own flavour to the search page
+- Handle API Calls: Implement and integrate real API calls using the existing searchShows function from apiService.
+- Error Handling and User Feedback: Enhance the application’s error handling. Provide detailed feedback to users when network errors occur.  
+- Detailed Show Page: Create a detailed view for each show when clicked, displaying more information fetched from the API.
+- Pagination or Infinite Scroll (optional): Implement basic pagination or infinite scrolling for the search results if time permits.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Development and Contribution
+We welcome contributions to improve this project. To contribute, follow the steps below:
+- Fork the repository.
+- Create a new branch for the feature (git checkout -b feature-name).
+- Commit your changes (git commit -m 'Add some feature').
+- Push to the branch (git push origin feature-name).
+- Open a pull request.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
