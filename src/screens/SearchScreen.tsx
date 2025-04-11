@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { searchShows } from '../api/apiService'; // Adjust based on your directory structure
-import { Show, SearchResult } from '../types/apiTypes'; // Adjust based on your directory structure
+import { searchShows } from '../api/apiService';
+import { Show, SearchResult } from '../types/apiTypes';
 import  SearchBar  from '../components/SearchBar';
 
 const SearchScreen: React.FC = () => {

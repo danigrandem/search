@@ -32,6 +32,7 @@ As part of the assessment, you are required to complete the following task withi
 - Error Handling and User Feedback: Enhance the application’s error handling. Provide detailed feedback to users when network errors occur.  
 - Detailed Show Page: Create a detailed view for each show when clicked, displaying more information fetched from the API.
 - Pagination or Infinite Scroll (optional): Implement basic pagination or infinite scrolling for the search results if time permits.
+- add some unit tests
 
 ## Submission
 To submit your completed project, follow these steps:
