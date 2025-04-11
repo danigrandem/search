@@ -33,11 +33,24 @@ As part of the assessment, you are required to complete the following task withi
 - Detailed Show Page: Create a detailed view for each show when clicked, displaying more information fetched from the API.
 - Pagination or Infinite Scroll (optional): Implement basic pagination or infinite scrolling for the search results if time permits.
 
-### Development and Contribution
-We welcome contributions to improve this project. To contribute, follow the steps below:
-- Fork the repository.
-- Create a new branch for the feature (git checkout -b feature-name).
-- Commit your changes (git commit -m 'Add some feature').
-- Push to the branch (git push origin feature-name).
-- Open a pull request.
+## Submission
+To submit your completed project, follow these steps:
+1. **Clone this project**:
+    - open a terminal and command to the directory where you want to clone the repository
+    - git clone https://github.com/ruudkalis/series-search-starter.git 
+2. **Create a Private Repository**:
+    - Create a new private repository on GitHub.
+    - Ensure the repository visibility is set to "Private."
+3. **Push Your Code**:
+    - Add the remote URL of the private repository to your local project:
+      ```bash
+      git remote add origin <your-private-repo-url>
+      git push -u origin main
+      ```
+4. **Grant Access**:
+    - Go to the "Settings" of your private repository on GitHub.
+    - Under "Collaborators and teams," invite the reviewer (e.g., recruiter or hiring manager) by their GitHub username or email.
+5. **Share the Repository Link**:
+    - Provide the private repository link to the reviewer, ensuring they have access.
+ 
 
