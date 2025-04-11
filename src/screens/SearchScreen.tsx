@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { searchShows } from '../api/apiService'; // Adjust based on your directory structure
 import { Show, SearchResult } from '../types/apiTypes'; // Adjust based on your directory structure
+import  SearchBar  from '../components/SearchBar';
 
 const SearchScreen: React.FC = () => {
     const [query, setQuery] = useState<string>('');
@@ -29,13 +30,7 @@ const SearchScreen: React.FC = () => {
     return (
         <div style={{ padding: '20px' }}>
             <h1>Search Shows</h1>
-            <input
-                type="text"
-                placeholder="Enter show name"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                style={{ marginRight: '10px', padding: '5px' }}
-            />
+            <SearchBar value={query} onChange={setQuery} />
             <button onClick={handleSearch} style={{ padding: '5px' }}>Search</button>
             {loading && <div>Loading...</div>}
             {error && <div style={{ color: 'red' }}>{error}</div>}
