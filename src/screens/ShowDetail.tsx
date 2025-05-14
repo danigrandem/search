@@ -48,10 +48,10 @@ const ShowDetail: React.FC = () => {
 
             <div className="show-header">
                 <div className="image-container">
-                    {show.image ? (
+                    {show.poster_path ? (
                         <img
-                            src={show.image.original}
-                            alt={show.name}
+                            src={`https://image.tmdb.org/t/p/w220_and_h330_face/${show.poster_path}`}
+                            alt={show.original_title}
                             className="show-image"
                         />
                     ) : (
@@ -61,25 +61,25 @@ const ShowDetail: React.FC = () => {
                     )}
                 </div>
                 <div className="show-info">
-                    <h1>{show.name}</h1>
+                    <h1>{show.original_title}</h1>
                     {show.genres && show.genres.length > 0 && (
                         <div className="genres">
                             {show.genres.map(genre => (
-                                <span key={genre} className="genre-tag">
-                                    {genre}
+                                <span key={genre.id} className="genre-tag">
+                                    {genre.name}
                                 </span>
                             ))}
                         </div>
                     )}
-                    {show.rating?.average && (
+                    {show.vote_average && (
                         <div className="rating">
-                            {show.rating.average}/10
+                            {show.vote_average}/10
                         </div>
                     )}
-                    {show.summary && (
+                    {show.overview && (
                         <div
                             className="summary"
-                            dangerouslySetInnerHTML={{ __html: show.summary }}
+                            dangerouslySetInnerHTML={{ __html: show.overview }}
                         />
                     )}
                 </div>
@@ -93,24 +93,11 @@ const ShowDetail: React.FC = () => {
                             <span>{show.status}</span>
                         </div>
                     )}
-                    {show.premiered && (
+                    {show.release_date && (
                         <div className="meta-item">
-                            <strong>Premiered</strong>
-                            <span>{show.premiered}</span>
-                        </div>
-                    )}
-                    {show.network && (
-                        <div className="meta-item">
-                            <strong>Network</strong>
-                            <span>{show.network.name}</span>
-                        </div>
-                    )}
-                    {show.schedule && show.schedule.days.length > 0 && (
-                        <div className="meta-item">
-                            <strong>Schedule</strong>
+                            <strong>Release date</strong>
                             <span>
-                                {show.schedule.days.join(', ')}
-                                {show.schedule.time && ` at ${show.schedule.time}`}
+                                {show.release_date}
                             </span>
                         </div>
                     )}

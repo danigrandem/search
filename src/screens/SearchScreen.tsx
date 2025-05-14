@@ -1,30 +1,21 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { searchShows } from '../api/apiService';
-import { Show } from '../types/apiTypes';
+import { searchShows, getGenres } from '../api/apiService';
+import { Show, Genre } from '../types/apiTypes';
 import SearchBar from '../components/SearchBar';
 import Card from '../components/Card';
 import CardSkeleton from '../components/CardSkeleton';
 
-const ITEMS_PER_PAGE = 6;
-
 const SearchScreen: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [allResults, setAllResults] = useState<Show[]>([]);
-    const [visibleResults, setVisibleResults] = useState<Show[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [results, setResults] = useState<Show[]>([]);
+    const [genres, setGenres] = useState<Genre[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [hasMore, setHasMore] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const loadingRef = useRef<HTMLDivElement>(null);
 
     const handleQueryChange = (query: string) => {
         setLoading(true);
-        setQuery(query);
-        setCurrentPage(1);
-        setVisibleResults([]);
-        setAllResults([]);
-        setHasMore(true);
+        setQuery(query)
     }
 
     const initialQuery = searchParams.get('q') || '';
@@ -35,9 +26,7 @@ const SearchScreen: React.FC = () => {
 
         if (!searchQuery.trim()) {
             setLoading(false);
-            setAllResults([]);
-            setVisibleResults([]);
-            setHasMore(false);
+            setResults([]);
             return;
         }
 
@@ -45,47 +34,13 @@ const SearchScreen: React.FC = () => {
 
         try {
             const data = await searchShows(searchQuery);
-            const formattedResults = data.map(item => item.show);
-            setAllResults(formattedResults);
-            setVisibleResults(formattedResults.slice(0, ITEMS_PER_PAGE));
-            setHasMore(formattedResults.length > ITEMS_PER_PAGE);
+            setResults(data.results);
         } catch (err) {
             setError('Error fetching shows. Please try again later.');
         } finally {
             setLoading(false);
         }
     }, [setSearchParams]);
-
-    const loadMore = useCallback(() => {
-        if (loading || !hasMore) return;
-
-        const nextPage = currentPage + 1;
-        const start = (nextPage - 1) * ITEMS_PER_PAGE;
-        const end = start + ITEMS_PER_PAGE;
-        const newResults = allResults.slice(0, end);
-
-        setVisibleResults(newResults);
-        setCurrentPage(nextPage);
-        setHasMore(end < allResults.length);
-    }, [loading, hasMore, currentPage, allResults]);
-
-    // Intersection Observer for infinite scroll
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                if (entries[0].isIntersecting && hasMore) {
-                    loadMore();
-                }
-            },
-            { threshold: 0.5 }
-        );
-
-        if (loadingRef.current) {
-            observer.observe(loadingRef.current);
-        }
-
-        return () => observer.disconnect();
-    }, [loadMore, hasMore]);
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -100,6 +55,20 @@ const SearchScreen: React.FC = () => {
             handleSearch(initialQuery);
         }
     }, [initialQuery, handleSearch]);
+
+    useEffect(() => {
+        const fetchGenres = async () => {
+            try {
+                const genres = await getGenres();
+                setGenres(genres);
+            } catch (err) {
+                setError('Error fetching genres. Please try again later.');
+            }
+        };
+
+        fetchGenres();
+    }, []);
+
 
     return (
         <div style={styles.container}>
@@ -118,9 +87,9 @@ const SearchScreen: React.FC = () => {
                 </div>
             </div>
 
-            {loading && currentPage === 1 && (
+            {loading && (
                 <div style={styles.resultsGrid}>
-                    {[...Array(ITEMS_PER_PAGE)].map((_, index) => (
+                    {[...Array(6)].map((_, index) => (
                         <CardSkeleton key={index} />
                     ))}
                 </div>
@@ -128,24 +97,16 @@ const SearchScreen: React.FC = () => {
 
             {error && <div style={styles.error}>{error}</div>}
 
-            {visibleResults.length > 0 && (
+            {!loading && !error && results.length > 0 && (
                 <div style={styles.resultsGrid}>
-                    {visibleResults.map(show => (
-                        <Card key={show.id} show={show} />
+                    {results.map(show => (
+                        <Card key={show.id} show={show} genres={genres} />
                     ))}
                 </div>
             )}
 
-            {!loading && !error && query.trim() && visibleResults.length === 0 && (
+            {!loading && !error && query.trim() && results.length === 0 && (
                 <div style={styles.noResults}>No shows found</div>
-            )}
-
-            {hasMore && (
-                <div ref={loadingRef} style={styles.loadingMore}>
-                    {loading && currentPage > 1 && (
-                        <div style={styles.loadingText}>Loading more shows...</div>
-                    )}
-                </div>
             )}
         </div>
     );
@@ -197,14 +158,6 @@ const styles = {
         gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
         gap: '24px',
         padding: '16px 0'
-    },
-    loadingMore: {
-        padding: '32px 0',
-        textAlign: 'center' as const
-    },
-    loadingText: {
-        color: '#64748b',
-        fontSize: '16px'
     }
 };
 

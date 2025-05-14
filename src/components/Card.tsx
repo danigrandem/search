@@ -1,38 +1,39 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Show } from '../types/apiTypes';
+import { Show, Genre } from '../types/apiTypes';
 
 interface CardProps {
     show: Show;
+    genres: Genre[];
 }
 
-const Card: React.FC<CardProps> = ({ show }) => {
+const Card: React.FC<CardProps> = ({ show, genres }) => {
     return (
         <Link to={`/show/${show.id}`} style={styles.link}>
             <div style={styles.card}>
-                {show.image && (
+                {show.backdrop_path && (
                     <div style={styles.imageContainer}>
                         <img
-                            src={show.image.medium}
-                            alt={show.name}
+                            src={`https://image.tmdb.org/t/p/w220_and_h330_face/${show.backdrop_path}`}
+                            alt={show.original_title}
                             style={styles.image}
                         />
                     </div>
                 )}
                 <div style={styles.content}>
-                    <h2 style={styles.title}>{show.name}</h2>
-                    {show.genres.length > 0 && (
+                    <h2 style={styles.title}>{show.original_title}</h2>
+                    {show.genre_ids.length > 0 && (
                         <div style={styles.genres}>
-                            {show.genres.slice(0, 3).map((genre, index) => (
+                            {show.genre_ids.slice(0, 3).map((genre, index) => (
                                 <span key={index} style={styles.genre}>
-                                    {genre}
+                                    {genres.find((g) => g.id === genre)?.name}
                                 </span>
                             ))}
                         </div>
                     )}
                     <div style={styles.rating}>
-                        {show.rating.average
-                            ? `${show.rating.average}/10`
+                        {show.vote_average
+                            ? `${show.vote_average}/10`
                             : 'No rating'
                         }
                     </div>
