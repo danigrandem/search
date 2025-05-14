@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getShowById } from '../api/apiService';
 import { Show } from '../types/apiTypes';
+import './ShowDetail.css';
 
 const ShowDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -28,7 +29,7 @@ const ShowDetail: React.FC = () => {
     }, [id]);
 
     if (loading) {
-        return <div className="loading">Loading...</div>;
+        return <div className="loading">Loading show details</div>;
     }
 
     if (error) {
@@ -41,19 +42,27 @@ const ShowDetail: React.FC = () => {
 
     return (
         <div className="show-detail">
-            <Link to="/" className="back-button">← Back to Search</Link>
+            <Link to="/" className="back-button">
+                ← Back to Search
+            </Link>
 
             <div className="show-header">
-                {show.image && (
-                    <img
-                        src={show.image.original}
-                        alt={show.name}
-                        className="show-image"
-                    />
-                )}
+                <div className="image-container">
+                    {show.image ? (
+                        <img
+                            src={show.image.original}
+                            alt={show.name}
+                            className="show-image"
+                        />
+                    ) : (
+                        <div className="no-image">
+                            No Image Available
+                        </div>
+                    )}
+                </div>
                 <div className="show-info">
                     <h1>{show.name}</h1>
-                    {show.genres && (
+                    {show.genres && show.genres.length > 0 && (
                         <div className="genres">
                             {show.genres.map(genre => (
                                 <span key={genre} className="genre-tag">
@@ -64,39 +73,45 @@ const ShowDetail: React.FC = () => {
                     )}
                     {show.rating?.average && (
                         <div className="rating">
-                            Rating: ⭐ {show.rating.average}/10
+                            {show.rating.average}/10
                         </div>
+                    )}
+                    {show.summary && (
+                        <div
+                            className="summary"
+                            dangerouslySetInnerHTML={{ __html: show.summary }}
+                        />
                     )}
                 </div>
             </div>
 
             <div className="show-body">
-                {show.summary && (
-                    <div
-                        className="summary"
-                        dangerouslySetInnerHTML={{ __html: show.summary }}
-                    />
-                )}
-
                 <div className="show-meta">
                     {show.status && (
                         <div className="meta-item">
-                            <strong>Status:</strong> {show.status}
+                            <strong>Status</strong>
+                            <span>{show.status}</span>
                         </div>
                     )}
                     {show.premiered && (
                         <div className="meta-item">
-                            <strong>Premiered:</strong> {show.premiered}
+                            <strong>Premiered</strong>
+                            <span>{show.premiered}</span>
                         </div>
                     )}
                     {show.network && (
                         <div className="meta-item">
-                            <strong>Network:</strong> {show.network.name}
+                            <strong>Network</strong>
+                            <span>{show.network.name}</span>
                         </div>
                     )}
-                    {show.schedule && (
+                    {show.schedule && show.schedule.days.length > 0 && (
                         <div className="meta-item">
-                            <strong>Schedule:</strong> {show.schedule.days.join(', ')} at {show.schedule.time}
+                            <strong>Schedule</strong>
+                            <span>
+                                {show.schedule.days.join(', ')}
+                                {show.schedule.time && ` at ${show.schedule.time}`}
+                            </span>
                         </div>
                     )}
                 </div>
