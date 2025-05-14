@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { searchShows, getGenres } from '../api/apiService';
 import { Show, Genre } from '../types/apiTypes';
 import SearchBar from '../components/SearchBar';

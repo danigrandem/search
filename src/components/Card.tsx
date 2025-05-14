@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Show, Genre } from '../types/apiTypes';
 
 interface CardProps {
@@ -14,7 +14,7 @@ const Card: React.FC<CardProps> = ({ show, genres }) => {
                 {show.backdrop_path && (
                     <div style={styles.imageContainer}>
                         <img
-                            src={`https://image.tmdb.org/t/p/w220_and_h330_face/${show.backdrop_path}`}
+                            src={`https://image.tmdb.org/t/p/w220_and_h330_face${show.backdrop_path}`}
                             alt={show.original_title}
                             style={styles.image}
                         />

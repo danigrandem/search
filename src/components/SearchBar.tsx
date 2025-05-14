@@ -17,7 +17,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, loading = false 
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
             />
             {loading && (
-                <div style={styles.loadingIndicator}>
+                <div style={styles.loadingIndicator} role="status">
                     <div style={styles.spinner} />
                 </div>
             )}
