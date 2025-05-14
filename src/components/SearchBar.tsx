@@ -3,44 +3,71 @@ import React from 'react';
 interface SearchBarProps {
     value: string;
     onChange: (newValue: string) => void;
-    onEnterPress?: () => void;
+    loading?: boolean;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onEnterPress }) => {
-    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && onEnterPress) {
-            onEnterPress();
-        }
-    };
-
+const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, loading = false }) => {
     return (
         <div style={styles.container}>
             <input
                 type="text"
                 style={styles.input}
-                placeholder="Search for TV shows..."
+                placeholder="Start typing to search..."
                 value={value}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
-                onKeyPress={handleKeyPress}
             />
+            {loading && (
+                <div style={styles.loadingIndicator}>
+                    <div style={styles.spinner} />
+                </div>
+            )}
         </div>
     );
 };
 
+const spinnerKeyframes = `
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+`;
+
+const styleSheet = document.createElement('style');
+styleSheet.textContent = spinnerKeyframes;
+document.head.appendChild(styleSheet);
+
 const styles = {
     container: {
-        flex: 1,
-        minWidth: 0 // This prevents flex item from overflowing
+        position: 'relative' as const,
+        width: '100%'
     },
     input: {
         width: '100%',
         padding: '12px 16px',
+        paddingRight: '40px', // Space for loading indicator
         fontSize: '16px',
         border: '2px solid #e2e8f0',
         borderRadius: '8px',
         backgroundColor: 'white',
-        transition: 'border-color 0.2s ease',
+        transition: 'all 0.2s ease',
         outline: 'none'
+    },
+    loadingIndicator: {
+        position: 'absolute' as const,
+        right: '12px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    spinner: {
+        width: '20px',
+        height: '20px',
+        border: '2px solid #e2e8f0',
+        borderTop: '2px solid #2563eb',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite'
     }
 };
 

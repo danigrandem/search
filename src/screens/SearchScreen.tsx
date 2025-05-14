@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { searchShows } from '../api/apiService';
 import { Show, SearchResult } from '../types/apiTypes';
 import SearchBar from '../components/SearchBar';
@@ -10,29 +10,40 @@ const SearchScreen: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-    const handleSearch = () => {
-        if (!query.trim()) return;
+    const handleSearch = useCallback(async (searchQuery: string) => {
+        if (!searchQuery.trim()) {
+            setResults([]);
+            return;
+        }
+
         setLoading(true);
         setError(null);
 
-        searchShows(query)
-            .then((data: SearchResult[]) => {
-                const formattedResults = data.map(item => item.show);
-                setResults(formattedResults);
-            })
-            .catch(() => {
-                setError('Error fetching shows. Please try again later.');
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    };
+        try {
+            const data = await searchShows(searchQuery);
+            const formattedResults = data.map(item => item.show);
+            setResults(formattedResults);
+        } catch (err) {
+            setError('Error fetching shows. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    // Debounce search to avoid too many API calls
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            handleSearch(query);
+        }, 300); // Wait for 300ms after user stops typing
+
+        return () => clearTimeout(timeoutId);
+    }, [query, handleSearch]);
 
     return (
         <div style={styles.container}>
             <div style={styles.header}>
                 <h1 style={styles.title}>TV Show Search</h1>
-                <p style={styles.subtitle}>Find your favorite TV shows</p>
+                <p style={styles.subtitle}>Start typing to search for TV shows</p>
             </div>
 
             <div style={styles.searchSection}>
@@ -40,18 +51,8 @@ const SearchScreen: React.FC = () => {
                     <SearchBar
                         value={query}
                         onChange={setQuery}
-                        onEnterPress={handleSearch}
+                        loading={loading}
                     />
-                    <button
-                        onClick={handleSearch}
-                        style={{
-                            ...styles.button,
-                            ...(loading ? styles.buttonDisabled : {})
-                        }}
-                        disabled={loading}
-                    >
-                        {loading ? 'Searching...' : 'Search'}
-                    </button>
                 </div>
             </div>
 
@@ -93,25 +94,8 @@ const styles = {
         padding: '0 16px'
     },
     searchContainer: {
-        display: 'flex',
-        gap: '12px',
         width: '100%',
         maxWidth: '600px'
-    },
-    button: {
-        padding: '12px 24px',
-        fontSize: '16px',
-        backgroundColor: '#2563eb',
-        color: 'white',
-        border: 'none',
-        borderRadius: '8px',
-        cursor: 'pointer',
-        transition: 'background-color 0.2s ease',
-        whiteSpace: 'nowrap' as const
-    },
-    buttonDisabled: {
-        backgroundColor: '#93c5fd',
-        cursor: 'not-allowed'
     },
     error: {
         color: '#ef4444',
