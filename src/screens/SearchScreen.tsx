@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { searchShows, getGenres } from '../api/apiService';
 import { Show, Genre } from '../types/apiTypes';
@@ -8,33 +8,62 @@ import CardSkeleton from '../components/CardSkeleton';
 
 const SearchScreen: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-    const [results, setResults] = useState<Show[]>([]);
+    const [movies, setMovies] = useState<Show[]>([]);
     const [genres, setGenres] = useState<Genre[]>([]);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const observerRef = useRef<IntersectionObserver | null>(null);
+    const lastMovieElementRef = useCallback((node: HTMLDivElement) => {
+        if (loading) return;
+
+        if (observerRef.current) {
+            observerRef.current.disconnect();
+        }
+
+        observerRef.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore) {
+                setPage(prevPage => prevPage + 1);
+            }
+        });
+
+        if (node) {
+            observerRef.current.observe(node);
+        }
+    }, [loading, hasMore]);
 
     const handleQueryChange = (query: string) => {
         setLoading(true);
-        setQuery(query)
+        setQuery(query);
+        setMovies([]);
+        setPage(1);
+        setHasMore(true);
     }
 
     const initialQuery = searchParams.get('q') || '';
     const [query, setQuery] = useState<string>(initialQuery);
 
-    const handleSearch = useCallback(async (searchQuery: string) => {
-        setSearchParams(searchQuery ? { q: searchQuery } : {});
-
+    const handleSearch = useCallback(async (searchQuery: string, currentPage: number) => {
         if (!searchQuery.trim()) {
             setLoading(false);
-            setResults([]);
+            setMovies([]);
+            setHasMore(false);
             return;
         }
 
+        setSearchParams(searchQuery ? { q: searchQuery } : {});
         setError(null);
 
         try {
-            const data = await searchShows(searchQuery);
-            setResults(data.results);
+            const response = await searchShows(searchQuery, currentPage);
+            const newMovies = response.results;
+
+            setMovies(prev =>
+                currentPage === 1 ? newMovies : [...prev, ...newMovies]
+            );
+
+            setHasMore(currentPage < response.total_pages);
         } catch (err) {
             setError('Error fetching shows. Please try again later.');
         } finally {
@@ -42,17 +71,28 @@ const SearchScreen: React.FC = () => {
         }
     }, [setSearchParams]);
 
+    // Handle search when query changes (with debounce)
     useEffect(() => {
         const timeoutId = setTimeout(() => {
-            handleSearch(query);
+            if (query !== initialQuery || page === 1) {
+                handleSearch(query, 1);
+            }
         }, 300);
 
         return () => clearTimeout(timeoutId);
-    }, [query, handleSearch]);
+    }, [query, handleSearch, initialQuery, page]);
 
+    // Handle pagination
+    useEffect(() => {
+        if (page > 1) {
+            handleSearch(query, page);
+        }
+    }, [page, query, handleSearch]);
+
+    // Initial search if query param exists
     useEffect(() => {
         if (initialQuery) {
-            handleSearch(initialQuery);
+            handleSearch(initialQuery, 1);
         }
     }, [initialQuery, handleSearch]);
 
@@ -69,6 +109,14 @@ const SearchScreen: React.FC = () => {
         fetchGenres();
     }, []);
 
+    // Cleanup observer on unmount
+    useEffect(() => {
+        return () => {
+            if (observerRef.current) {
+                observerRef.current.disconnect();
+            }
+        };
+    }, []);
 
     return (
         <div style={styles.container}>
@@ -82,30 +130,33 @@ const SearchScreen: React.FC = () => {
                     <SearchBar
                         value={query}
                         onChange={handleQueryChange}
-                        loading={loading}
+                        loading={loading && page === 1}
                     />
                 </div>
+            </div>
+
+            {error && <div style={styles.error}>{error}</div>}
+
+            <div style={styles.resultsGrid}>
+                {movies.map((movie, index) => (
+                    <div
+                        key={movie.id}
+                        ref={index === movies.length - 1 ? lastMovieElementRef : null}
+                    >
+                        <Card show={movie} genres={genres} />
+                    </div>
+                ))}
             </div>
 
             {loading && (
                 <div style={styles.resultsGrid}>
                     {[...Array(6)].map((_, index) => (
-                        <CardSkeleton key={index} />
+                        <CardSkeleton key={`skeleton-${index}`} />
                     ))}
                 </div>
             )}
 
-            {error && <div style={styles.error}>{error}</div>}
-
-            {!loading && !error && results.length > 0 && (
-                <div style={styles.resultsGrid}>
-                    {results.map(show => (
-                        <Card key={show.id} show={show} genres={genres} />
-                    ))}
-                </div>
-            )}
-
-            {!loading && !error && query.trim() && results.length === 0 && (
+            {!loading && !error && query.trim() && movies.length === 0 && (
                 <div style={styles.noResults}>No shows found</div>
             )}
         </div>
