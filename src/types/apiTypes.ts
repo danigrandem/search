@@ -2,17 +2,27 @@
 export interface Show {
     id: number;
     name: string;
+    summary: string;
+    image?: {
+        medium: string;
+        original: string;
+    };
     genres: string[];
     rating: {
         average: number | null;
     };
-    image: {
-        medium: string;
-        original: string;
-    } | null;
-    summary: string;
+    status: string;
+    premiered: string;
+    network?: {
+        name: string;
+    };
+    schedule: {
+        time: string;
+        days: string[];
+    };
 }
 
 export interface SearchResult {
+    score: number;
     show: Show;
 }

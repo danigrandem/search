@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Show } from '../types/apiTypes';
 
 interface CardProps {
@@ -7,58 +8,92 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ show }) => {
     return (
-        <div style={styles.card}>
-            {show.image?.medium && (
-                <img
-                    src={show.image.medium}
-                    alt={show.name}
-                    style={styles.cardImage}
-                />
-            )}
-            <div style={styles.cardContent}>
-                <h2 style={styles.cardTitle}>{show.name}</h2>
-                {show.summary && (
-                    <div
-                        style={styles.cardDescription}
-                        dangerouslySetInnerHTML={{
-                            __html: show.summary.length > 150
-                                ? show.summary.substring(0, 150) + '...'
-                                : show.summary
-                        }}
-                    />
+        <Link to={`/show/${show.id}`} style={styles.link}>
+            <div style={styles.card}>
+                {show.image && (
+                    <div style={styles.imageContainer}>
+                        <img
+                            src={show.image.medium}
+                            alt={show.name}
+                            style={styles.image}
+                        />
+                    </div>
                 )}
+                <div style={styles.content}>
+                    <h2 style={styles.title}>{show.name}</h2>
+                    {show.genres.length > 0 && (
+                        <div style={styles.genres}>
+                            {show.genres.slice(0, 3).map((genre, index) => (
+                                <span key={index} style={styles.genre}>
+                                    {genre}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+                    <div style={styles.rating}>
+                        {show.rating.average
+                            ? `⭐ ${show.rating.average}/10`
+                            : 'No rating'
+                        }
+                    </div>
+                </div>
             </div>
-        </div>
+        </Link>
     );
 };
 
 const styles = {
+    link: {
+        textDecoration: 'none',
+        color: 'inherit',
+        display: 'block'
+    },
     card: {
         backgroundColor: 'white',
         borderRadius: '12px',
         overflow: 'hidden',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
-        transition: 'transform 0.2s ease',
-        cursor: 'pointer'
+        transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+        ':hover': {
+            transform: 'translateY(-4px)',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)'
+        }
     },
-    cardImage: {
+    imageContainer: {
         width: '100%',
-        height: '200px',
+        height: '295px',
+        backgroundColor: '#f1f5f9'
+    },
+    image: {
+        width: '100%',
+        height: '100%',
         objectFit: 'cover' as const
     },
-    cardContent: {
+    content: {
         padding: '16px'
     },
-    cardTitle: {
-        fontSize: '20px',
+    title: {
+        margin: '0 0 12px 0',
+        fontSize: '18px',
         fontWeight: '600',
-        color: '#1e293b',
-        marginBottom: '8px'
+        color: '#1e293b'
     },
-    cardDescription: {
+    genres: {
+        display: 'flex',
+        gap: '8px',
+        marginBottom: '12px',
+        flexWrap: 'wrap' as const
+    },
+    genre: {
+        padding: '4px 12px',
+        backgroundColor: '#f1f5f9',
+        borderRadius: '16px',
         fontSize: '14px',
-        color: '#64748b',
-        lineHeight: '1.5'
+        color: '#475569'
+    },
+    rating: {
+        fontSize: '14px',
+        color: '#64748b'
     }
 };
 

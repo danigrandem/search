@@ -1,9 +1,16 @@
 import React from 'react';
-import SearchScreen from "./screens/SearchScreen";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import SearchScreen from './screens/SearchScreen';
+import ShowDetail from './screens/ShowDetail';
 
 const App: React.FC = () => {
   return (
-      <SearchScreen />
+    <Router>
+      <Routes>
+        <Route path="/" element={<SearchScreen />} />
+        <Route path="/show/:id" element={<ShowDetail />} />
+      </Routes>
+    </Router>
   );
 };
 
