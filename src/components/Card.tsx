@@ -32,7 +32,7 @@ const Card: React.FC<CardProps> = ({ show }) => {
                     )}
                     <div style={styles.rating}>
                         {show.rating.average
-                            ? `⭐ ${show.rating.average}/10`
+                            ? `${show.rating.average}/10`
                             : 'No rating'
                         }
                     </div>

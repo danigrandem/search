@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { searchShows } from '../api/apiService';
 import { Show } from '../types/apiTypes';
 import SearchBar from '../components/SearchBar';
@@ -6,7 +7,7 @@ import Card from '../components/Card';
 import CardSkeleton from '../components/CardSkeleton';
 
 const SearchScreen: React.FC = () => {
-    const [query, setQuery] = useState<string>('');
+    const [searchParams, setSearchParams] = useSearchParams();
     const [results, setResults] = useState<Show[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -16,7 +17,12 @@ const SearchScreen: React.FC = () => {
         setQuery(query)
     }
 
+    const initialQuery = searchParams.get('q') || '';
+    const [query, setQuery] = useState<string>(initialQuery);
+
     const handleSearch = useCallback(async (searchQuery: string) => {
+        setSearchParams(searchQuery ? { q: searchQuery } : {});
+
         if (!searchQuery.trim()) {
             setLoading(false);
             setResults([]);
@@ -34,17 +40,21 @@ const SearchScreen: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [setSearchParams]);
 
-    // Debounce search to avoid too many API calls
     useEffect(() => {
-
         const timeoutId = setTimeout(() => {
             handleSearch(query);
         }, 300);
 
         return () => clearTimeout(timeoutId);
     }, [query, handleSearch]);
+
+    useEffect(() => {
+        if (initialQuery) {
+            handleSearch(initialQuery);
+        }
+    }, [initialQuery, handleSearch]);
 
     return (
         <div style={styles.container}>

@@ -33,7 +33,7 @@ const styles = {
     input: {
         width: '100%',
         padding: '12px 16px',
-        paddingRight: '40px', // Space for loading indicator
+        paddingRight: '40px',
         fontSize: '16px',
         border: '2px solid #e2e8f0',
         borderRadius: '8px',
