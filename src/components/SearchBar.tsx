@@ -3,9 +3,16 @@ import React from 'react';
 interface SearchBarProps {
     value: string;
     onChange: (newValue: string) => void;
+    onEnterPress?: () => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ value, onChange }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, onEnterPress }) => {
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter' && onEnterPress) {
+            onEnterPress();
+        }
+    };
+
     return (
         <div style={styles.container}>
             <input
@@ -13,7 +20,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange }) => {
                 style={styles.input}
                 placeholder="Search for TV shows..."
                 value={value}
-                onChange={(e) => onChange(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+                onKeyPress={handleKeyPress}
             />
         </div>
     );
@@ -21,9 +29,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange }) => {
 
 const styles = {
     container: {
-        margin: '0 auto',
-        maxWidth: '500px',
-        width: '100%'
+        flex: 1,
+        minWidth: 0 // This prevents flex item from overflowing
     },
     input: {
         width: '100%',

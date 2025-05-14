@@ -36,17 +36,23 @@ const SearchScreen: React.FC = () => {
             </div>
 
             <div style={styles.searchSection}>
-                <SearchBar value={query} onChange={setQuery} />
-                <button
-                    onClick={handleSearch}
-                    style={{
-                        ...styles.button,
-                        ...(loading ? styles.buttonDisabled : {})
-                    }}
-                    disabled={loading}
-                >
-                    {loading ? 'Searching...' : 'Search'}
-                </button>
+                <div style={styles.searchContainer}>
+                    <SearchBar
+                        value={query}
+                        onChange={setQuery}
+                        onEnterPress={handleSearch}
+                    />
+                    <button
+                        onClick={handleSearch}
+                        style={{
+                            ...styles.button,
+                            ...(loading ? styles.buttonDisabled : {})
+                        }}
+                        disabled={loading}
+                    >
+                        {loading ? 'Searching...' : 'Search'}
+                    </button>
+                </div>
             </div>
 
             {error && <div style={styles.error}>{error}</div>}
@@ -82,10 +88,15 @@ const styles = {
     },
     searchSection: {
         display: 'flex',
-        flexDirection: 'column' as const,
-        gap: '16px',
+        justifyContent: 'center',
         marginBottom: '32px',
-        alignItems: 'center'
+        padding: '0 16px'
+    },
+    searchContainer: {
+        display: 'flex',
+        gap: '12px',
+        width: '100%',
+        maxWidth: '600px'
     },
     button: {
         padding: '12px 24px',
@@ -96,7 +107,7 @@ const styles = {
         borderRadius: '8px',
         cursor: 'pointer',
         transition: 'background-color 0.2s ease',
-        minWidth: '120px'
+        whiteSpace: 'nowrap' as const
     },
     buttonDisabled: {
         backgroundColor: '#93c5fd',
