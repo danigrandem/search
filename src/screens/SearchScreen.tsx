@@ -11,13 +11,18 @@ const SearchScreen: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
+    const handleQueryChange = (query: string) => {
+        setLoading(true);
+        setQuery(query)
+    }
+
     const handleSearch = useCallback(async (searchQuery: string) => {
         if (!searchQuery.trim()) {
+            setLoading(false);
             setResults([]);
             return;
         }
 
-        setLoading(true);
         setError(null);
 
         try {
@@ -33,6 +38,7 @@ const SearchScreen: React.FC = () => {
 
     // Debounce search to avoid too many API calls
     useEffect(() => {
+
         const timeoutId = setTimeout(() => {
             handleSearch(query);
         }, 300);
@@ -51,7 +57,7 @@ const SearchScreen: React.FC = () => {
                 <div style={styles.searchContainer}>
                     <SearchBar
                         value={query}
-                        onChange={setQuery}
+                        onChange={handleQueryChange}
                         loading={loading}
                     />
                 </div>
