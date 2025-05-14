@@ -11,7 +11,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange }) => {
             <input
                 type="text"
                 style={styles.input}
-                placeholder="Search..."
+                placeholder="Search for TV shows..."
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
             />
@@ -20,8 +20,21 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange }) => {
 };
 
 const styles = {
-    container: { margin: '10px' },
-    input: { borderWidth: '1px', padding: '8px', borderStyle: 'solid' },
+    container: {
+        margin: '0 auto',
+        maxWidth: '500px',
+        width: '100%'
+    },
+    input: {
+        width: '100%',
+        padding: '12px 16px',
+        fontSize: '16px',
+        border: '2px solid #e2e8f0',
+        borderRadius: '8px',
+        backgroundColor: 'white',
+        transition: 'border-color 0.2s ease',
+        outline: 'none'
+    }
 };
 
 export default SearchBar;
