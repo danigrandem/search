@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { searchShows } from '../api/apiService';
-import { Show, SearchResult } from '../types/apiTypes';
+import { Show } from '../types/apiTypes';
 import SearchBar from '../components/SearchBar';
 import Card from '../components/Card';
+import CardSkeleton from '../components/CardSkeleton';
 
 const SearchScreen: React.FC = () => {
     const [query, setQuery] = useState<string>('');
@@ -34,7 +35,7 @@ const SearchScreen: React.FC = () => {
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             handleSearch(query);
-        }, 300); // Wait for 300ms after user stops typing
+        }, 300);
 
         return () => clearTimeout(timeoutId);
     }, [query, handleSearch]);
@@ -56,13 +57,27 @@ const SearchScreen: React.FC = () => {
                 </div>
             </div>
 
+            {loading && (
+                <div style={styles.resultsGrid}>
+                    {[...Array(6)].map((_, index) => (
+                        <CardSkeleton key={index} />
+                    ))}
+                </div>
+            )}
+
             {error && <div style={styles.error}>{error}</div>}
 
-            <div style={styles.resultsGrid}>
-                {results.map(show => (
-                    <Card key={show.id} show={show} />
-                ))}
-            </div>
+            {!loading && !error && results.length > 0 && (
+                <div style={styles.resultsGrid}>
+                    {results.map(show => (
+                        <Card key={show.id} show={show} />
+                    ))}
+                </div>
+            )}
+
+            {!loading && !error && query.trim() && results.length === 0 && (
+                <div style={styles.noResults}>No shows found</div>
+            )}
         </div>
     );
 };
@@ -101,6 +116,12 @@ const styles = {
         color: '#ef4444',
         textAlign: 'center' as const,
         marginBottom: '16px'
+    },
+    noResults: {
+        textAlign: 'center' as const,
+        color: '#64748b',
+        marginTop: '32px',
+        fontSize: '18px'
     },
     resultsGrid: {
         display: 'grid',

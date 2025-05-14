@@ -25,17 +25,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ value, onChange, loading = false 
     );
 };
 
-const spinnerKeyframes = `
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-`;
-
-const styleSheet = document.createElement('style');
-styleSheet.textContent = spinnerKeyframes;
-document.head.appendChild(styleSheet);
-
 const styles = {
     container: {
         position: 'relative' as const,
