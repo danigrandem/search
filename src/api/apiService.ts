@@ -4,10 +4,6 @@ import { Show, Genre, SearchResult } from '../types/apiTypes';
 const API_BASE_URL = 'https://api.themoviedb.org/3';
 const TMDB_TOKEN = process.env.REACT_APP_TMDB_TOKEN;
 
-if (!TMDB_TOKEN) {
-    throw new Error('TMDB API token not found in environment variables');
-}
-
 axios.interceptors.request.use(
     (config) => {
         config.headers.accept = 'application/json';
