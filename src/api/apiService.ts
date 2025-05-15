@@ -15,21 +15,38 @@ axios.interceptors.request.use(
     }
 );
 
-export const searchShows = async (query: string, page: number = 1): Promise<SearchResult> => {
-    try {
-        const response = await axios.get(`${API_BASE_URL}/search/movie?query=${query}&include_adult=false&language=en-US&page=${page}`);
-        return response.data;
-    } catch (error) {
-        throw new Error('Failed to fetch shows');
-    }
-};
-
 export const getGenres = async (): Promise<Array<Genre>> => {
     try {
         const response = await axios.get(`${API_BASE_URL}/genre/movie/list?language=en`);
         return response.data.genres;
     } catch (error) {
         throw new Error('Failed to fetch genres');
+    }
+};
+
+export const searchShows = async (query: string, page: number = 1): Promise<SearchResult> => {
+    try {
+        // Fetch both shows and genres in parallel
+        const [showsResponse, genres] = await Promise.all([
+            axios.get(`${API_BASE_URL}/search/movie?query=${query}&include_adult=false&language=en-US&page=${page}`),
+            getGenres()
+        ]);
+
+        // Create a map of genre IDs to genre objects for quick lookup
+        const genreMap = new Map(genres.map(genre => [genre.id, genre]));
+
+        // Add full genre objects to each show
+        const showsWithGenres = showsResponse.data.results.map((show: Show) => ({
+            ...show,
+            genres: show.genre_ids.map(id => genreMap.get(id)).filter(Boolean)
+        }));
+
+        return {
+            ...showsResponse.data,
+            results: showsWithGenres
+        };
+    } catch (error) {
+        throw new Error('Failed to fetch shows');
     }
 };
 

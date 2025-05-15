@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router';
-import { searchShows, getGenres } from '../api/apiService';
-import { Show, Genre } from '../types/apiTypes';
+import { searchShows } from '../api/apiService';
+import { Show } from '../types/apiTypes';
 import SearchBar from '../components/SearchBar';
 import Card from '../components/Card';
 import CardSkeleton from '../components/CardSkeleton';
@@ -9,7 +9,6 @@ import CardSkeleton from '../components/CardSkeleton';
 const SearchScreen: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [movies, setMovies] = useState<Show[]>([]);
-    const [genres, setGenres] = useState<Genre[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState(1);
@@ -96,19 +95,6 @@ const SearchScreen: React.FC = () => {
         }
     }, [initialQuery, handleSearch]);
 
-    useEffect(() => {
-        const fetchGenres = async () => {
-            try {
-                const genres = await getGenres();
-                setGenres(genres);
-            } catch (err) {
-                setError('Error fetching genres. Please try again later.');
-            }
-        };
-
-        fetchGenres();
-    }, []);
-
     // Cleanup observer on unmount
     useEffect(() => {
         return () => {
@@ -143,7 +129,7 @@ const SearchScreen: React.FC = () => {
                         key={movie.id}
                         ref={index === movies.length - 1 ? lastMovieElementRef : null}
                     >
-                        <Card show={movie} genres={genres} />
+                        <Card show={movie} />
                     </div>
                 ))}
             </div>

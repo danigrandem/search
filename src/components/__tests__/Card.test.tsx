@@ -1,9 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Card from '../Card';
-import { Show, Genre } from '../../types/apiTypes';
+import { Show } from '../../types/apiTypes';
 import { MemoryRouter } from 'react-router';
-
 
 const mockShow: Show = {
     id: 1,
@@ -19,34 +18,33 @@ const mockShow: Show = {
     popularity: 100,
     title: 'Test Movie',
     video: false,
-    vote_count: 100
+    vote_count: 100,
+    genres: [
+        { id: 1, name: 'Action' },
+        { id: 2, name: 'Drama' },
+        { id: 3, name: 'Comedy' }
+    ]
 };
-
-const mockGenres: Genre[] = [
-    { id: 1, name: 'Action' },
-    { id: 2, name: 'Drama' },
-    { id: 3, name: 'Comedy' }
-];
 
 describe('Card', () => {
     it('renders the movie title', () => {
-        render(<MemoryRouter><Card show={mockShow} genres={mockGenres} /></MemoryRouter>);
+        render(<MemoryRouter><Card show={mockShow} /></MemoryRouter>);
         expect(screen.getByText('Test Movie')).toBeInTheDocument();
     });
 
     it('renders the movie image with correct src', () => {
-        render(<MemoryRouter><Card show={mockShow} genres={mockGenres} /></MemoryRouter>);
+        render(<MemoryRouter><Card show={mockShow} /></MemoryRouter>);
         const image = screen.getByAltText('Test Movie') as HTMLImageElement;
         expect(image.src).toContain('https://image.tmdb.org/t/p/w220_and_h330_face/test-path.jpg');
     });
 
     it('renders genre names', () => {
-        render(<MemoryRouter><Card show={mockShow} genres={mockGenres} /></MemoryRouter>);
+        render(<MemoryRouter><Card show={mockShow} /></MemoryRouter>);
         expect(screen.getByText('Action')).toBeInTheDocument();
     });
 
     it('renders rating', () => {
-        render(<MemoryRouter><Card show={mockShow} genres={mockGenres} /></MemoryRouter>);
+        render(<MemoryRouter><Card show={mockShow} /></MemoryRouter>);
         expect(screen.getByText('8.5/10')).toBeInTheDocument();
     });
 
@@ -55,8 +53,14 @@ describe('Card', () => {
             ...mockShow,
             vote_average: 0
         };
-        render(<MemoryRouter><Card show={showWithNoRating} genres={mockGenres} /></MemoryRouter>);
+        render(<MemoryRouter><Card show={showWithNoRating} /></MemoryRouter>);
         expect(screen.getByText('No rating')).toBeInTheDocument();
+    });
+
+    it('creates a link to the show detail page', () => {
+        render(<MemoryRouter><Card show={mockShow} /></MemoryRouter>);
+        const link = screen.getByTestId('link');
+        expect(link).toHaveAttribute('href', '/show/1');
     });
 
     it('handles missing backdrop_path', () => {
@@ -64,7 +68,7 @@ describe('Card', () => {
             ...mockShow,
             backdrop_path: ''
         };
-        render(<MemoryRouter><Card show={showWithoutImage} genres={mockGenres} /></MemoryRouter>);
+        render(<MemoryRouter><Card show={showWithoutImage} /></MemoryRouter>);
         expect(screen.queryByRole('img')).not.toBeInTheDocument();
     });
 }); 
